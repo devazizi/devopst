@@ -1,0 +1,81 @@
+version: '3'
+
+networks:
+  sentry_network:
+    external: false
+    driver: bridge
+
+services:
+  sentry:
+    image: docker.arvancloud.ir/sentry:latest
+    depends_on:
+    - sentry_redis
+    - sentry_postgres
+    environment:
+    - SENTRY_REDIS_HOST=sentry_redis
+    - SENTRY_SECRET_KEY=Gmyuoz9LnBWrM3vXFGVD7WivfX3rJxfA83sc
+    - SENTRY_POSTGRES_HOST=sentry_postgres
+    - SENTRY_DB_USER:postgres
+    - SENTRY_DB_PASSWORD=sentry85543
+    - POSTGRES_DBNAME=sentry
+    ports:
+    - 9000:9200
+    networks:
+      - sentry_network
+
+  sentry_celery_beat:
+    image: docker.arvancloud.ir/sentry:latest
+    depends_on:
+    - sentry
+    environment:
+    - SENTRY_REDIS_HOST=sentry_redis
+    - SENTRY_SECRET_KEY=Gmyuoz9LnBWrM3vXFGVD7WivfX3rJxfA83sc
+    - SENTRY_POSTGRES_HOST=sentry_postgres
+    - SENTRY_DB_USER:postgres
+    - SENTRY_DB_PASSWORD=sentry85543
+    - POSTGRES_DBNAME=sentry
+    command: "sentry run cron"
+    networks:
+    - sentry_network
+
+  sentry_celery_worker:
+    image: docker.arvancloud.ir/sentry:latest
+    depends_on:
+    - sentry
+    environment:
+    - SENTRY_REDIS_HOST=sentry_redis
+    - SENTRY_SECRET_KEY=Gmyuoz9LnBWrM3vXFGVD7WivfX3rJxfA83sc
+    - SENTRY_POSTGRES_HOST=sentry_postgres
+    - SENTRY_DB_USER:postgres
+    - SENTRY_DB_PASSWORD=sentry85543
+    - POSTGRES_DBNAME=sentry
+    command: "sentry run worker"
+    networks:
+    - sentry_network
+
+  sentry_redis:
+    image: redis:alpine
+    container_name: sentry_redis
+    networks:
+      - sentry_network
+    ports:
+      - '6379:63799'
+  
+  
+  sentry_postgres:
+    image: docker.arvancloud.ir/postgres:latest
+    ports:
+      - '5432:54322'
+    container_name: postgres_db
+    # restart: always
+    environment:
+      - 'POSTGRES_PASSWORD=sentry85543'
+      - 'POSTGRES_USER:sentry'
+      - 'POSTGRES_DB:sentry'
+      # -POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - ./postgres_db_data:/var/lib/postgresql/data
+    networks:
+      - sentry_network
+
+    
