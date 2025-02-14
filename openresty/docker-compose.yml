@@ -1,0 +1,11 @@
+services:
+  openresty:
+    image: devazizimail/openresty-prometheus:1.0.0
+    container_name: openresty
+    ports:
+      - '8000:80'
+    volumes:
+      - ./nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf
+      - ./lua_modules/prometheus.lua:/usr/local/openresty/lualib/prometheus.lua
+      - ./lua_modules/prometheus_resty_counter.lua:/usr/local/openresty/lualib/prometheus_resty_counter.lua
+      - ./lua_modules/prometheus_keys.lua:/usr/local/openresty/lualib/prometheus_keys.lua
