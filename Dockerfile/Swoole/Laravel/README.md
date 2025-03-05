@@ -1,3 +1,4 @@
+ENV USER=octane
 
 #COPY --link --chown=${USER}:${USER} --from=vendor /usr/bin/composer /usr/bin/composer
 COPY --link --chown=${USER}:${USER} composer.json ./
@@ -11,15 +12,6 @@ RUN composer install \
    --no-ansi \
    --no-scripts
 
-#RUN composer install \
-#    --no-dev \
-#    --no-interaction \
-#    --no-autoloader \
-#    --no-ansi \
-#    --no-scripts \
-#    --audit
-
-
 COPY --link --chown=${USER}:${USER} . .
 
 RUN mkdir -p \
@@ -32,12 +24,12 @@ RUN mkdir -p \
    && chmod -R 775 storage bootstrap/cache \
    && chown -R ${USER}:${USER} storage bootstrap/cache
 
-   RUN composer install \
+RUN composer install \
    --classmap-authoritative \
    --no-interaction \
    --no-ansi \
    --no-dev \
    && composer clear-cache
 
-   RUN chmod -R 775 /var/www/html/storage
-   RUN chown -R octane:octane /var/www/html/
+RUN chmod -R 775 /var/www/html/storage
+RUN chown -R ${USER}:${USER} /var/www/html/
