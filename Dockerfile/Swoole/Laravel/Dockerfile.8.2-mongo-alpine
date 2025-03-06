@@ -60,7 +60,7 @@ RUN apk update; \
    ldap \
    igbinary \
    swoole \
-   mongodb-tools autoconf gcc musl-dev make \
+   autoconf gcc musl-dev make \
    && pecl install mongodb \
    && apk del autoconf gcc musl-dev make \
    && docker-php-source delete \
