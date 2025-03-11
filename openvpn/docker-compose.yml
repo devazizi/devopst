@@ -1,0 +1,10 @@
+services:
+  openvpn:
+    image: kylemanna/openvpn
+    container_name: openvpn
+    cap_add:
+      - NET_ADMIN
+    network_mode: host
+    volumes:
+      - ./volume:/etc/openvpn
+    restart: always
